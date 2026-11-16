@@ -1,24 +1,33 @@
 ## Overview
 
-The Amp Observability Extension provides an implementation for tracing and publishing traces to a WSO2 AI Agent Platform using the OpenTelemetry Protobuf HTTP endpoint.
+The `ballerinax/amp` package connects Ballerina AI agents to WSO2 Agent Manager. It provides:
+
+- **Tracing**: an observability extension that publishes an agent's traces to Agent Manager through the OpenTelemetry Protobuf HTTP endpoint.
+- **Chat service**: `amp:Listener` and `amp:ChatService`, which expose an agent through the `POST /chat` endpoint that the Agent Manager console's Try It page calls.
 
 ### Key Features
 
-- Publish traces to WSO2 AI Agent Platform via OpenTelemetry
-- Support for API key-based authentication
+- Publish traces to WSO2 Agent Manager via OpenTelemetry
+- API key-based authentication for publishing traces
 - Configurable organization, project, component, and environment identifiers
-- Compatible with AI agent tracing workflows
+- A chat service and listener that match the Agent Manager console's chat API
 
-## Enabling Amp Extension
+## Publishing Traces
 
-To enable the AMP extension in a Ballerina program, follow the below steps.
+To publish an agent's traces to Agent Manager, follow the steps below.
 
-1. Create a program with an AI agent eg: https://ballerina.io/learn/by-example/chat-agents/
+1. Create a program with an AI agent, e.g. https://ballerina.io/learn/by-example/chat-agents/
 
-2. Add the following import to your program.
+2. Import the package. If you use it only for tracing, import it with the `_` alias:
 
 ```ballerina
 import ballerinax/amp as _;
+```
+
+If you also use its chat service (see [Exposing an Agent to the Agent Manager Console](#exposing-an-agent-to-the-agent-manager-console)), import it without an alias; tracing works the same way:
+
+```ballerina
+import ballerinax/amp;
 ```
 
 3. Add the following to the `Ballerina.toml` when building your program.
@@ -53,4 +62,43 @@ componentUid=""    # Component UID send as a resource attribute
 environmentUid=""  # Environment UID send as a resource attribute
 ```
 
-5. Use `Try It` feature in Ballerina plugin or AI Chat view in `BI` plugin to send a message to the agent. This will result in a trace being published to the WSO2 AI Agent Platform.
+5. Send a message to the agent, e.g. with the `Try It` feature in the Ballerina plugin, the AI Chat view in the `BI` plugin, or the Agent Manager console. Each run publishes a trace to Agent Manager.
+
+## Exposing an Agent to the Agent Manager Console
+
+`amp:Listener` and `amp:ChatService` expose an agent through the `POST /chat` endpoint that the Agent Manager console's Try It page calls. The service is served directly by an `http:Listener`, so it remains the entrypoint of the traces it produces.
+
+```ballerina
+import ballerina/http;
+import ballerinax/amp;
+
+service amp:ChatService / on new amp:Listener(8000) {
+    resource function post chat(@http:Payload amp:ChatRequest request) returns amp:ChatResponse|error {
+        string reply = check agent.run(request.message, request.sessionId);
+        return {response: reply};
+    }
+}
+```
+
+- The request parameter must be annotated with `@http:Payload`.
+- `amp:Listener` takes a port (default `8090`) or an existing `http:Listener`.
+
+The endpoint accepts and returns JSON:
+
+```sh
+curl -s localhost:8000/chat -H 'Content-Type: application/json' \
+  -d '{"session_id": "session-123", "message": "Hi, how can you help me?", "context": {}}'
+```
+
+```json
+{"response": "Hello! How can I help?"}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `session_id` | `string` | Conversation identifier (`ChatRequest.sessionId`); reuse it for follow-up messages |
+| `message` | `string` | The user's message |
+| `context` | `object` | Optional context; the console sends an empty object |
+| `response` | `string` | The agent's reply (`ChatResponse.response`) |
+
+Additional fields in the request are kept as rest fields of `ChatRequest`, and additional fields in a `ChatResponse` are sent as-is.
