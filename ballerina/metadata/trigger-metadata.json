@@ -1,0 +1,65 @@
+{
+  "version": "v1.0",
+  "listeners": [
+    {
+      "id": "$listener",
+      "doc": "Serves amp:ChatService services over HTTP, so the WSO2 Agent Manager console's Try It page can chat with the agent. Listens on the given port, else 8090, or shares an existing http:Listener. Each service is attached to the underlying http:Listener directly, so it remains the entrypoint of the traces it produces.",
+      "type": { "name": "Listener" },
+      "services": ["$service"],
+      "multipleServicesAllowed": true,
+      "multipleServicesOfSameTypeAllowed": true
+    }
+  ],
+  "serviceTypes": [
+    {
+      "id": "$service",
+      "doc": "Exposes an agent through the POST /chat endpoint that the WSO2 Agent Manager console calls. The request carries the session ID, the user's message and optional context; the reply carries the agent's response. Agent Manager calls /chat at the root of the agent's endpoint, so the service is usually attached at the root base path.",
+      "type": { "name": "ChatService" },
+      "concrete": false,
+      "multipleListenersAllowed": false,
+      "identifier": {
+        "presence": "optional",
+        "form": ["basePath"]
+      },
+      "handlers": {
+        "backedByConcreteType": false,
+        "options": [
+          {
+            "id": "$service.chat",
+            "name": "chat",
+            "kind": "resource",
+            "doc": "Handles POST /chat: runs the agent on the user's message, keeping a separate conversation per session ID, and returns its reply. A returned error is answered with 500.",
+            "presence": "required",
+            "accessor": { "presence": "required", "values": ["post"] },
+            "path": { "presence": "required", "values": ["chat"] },
+            "params": [
+              {
+                "id": "$service.chat.request",
+                "name": "request",
+                "doc": "The message, read from the JSON request body: session_id, message and optional context. It must be annotated with @http:Payload, or the request is not read from the body.",
+                "type": { "name": "ChatRequest" },
+                "presence": "required",
+                "annotations": ["$payload"]
+              }
+            ],
+            "returns": {
+              "id": "$service.chat.returns",
+              "type": [
+                { "name": "ChatResponse" },
+                { "name": "error", "builtin": true }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "annotations": [
+    {
+      "id": "$payload",
+      "type": { "name": "Payload", "packageInfo": { "org": "ballerina", "packageName": "http", "moduleName": "http", "version": "2.17.4" } },
+      "attachPoint": "parameter",
+      "presence": "required"
+    }
+  ]
+}

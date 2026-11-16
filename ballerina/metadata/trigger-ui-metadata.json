@@ -1,0 +1,167 @@
+{
+  "version": "v1.0",
+  "metadata": {
+    "kind": "ai"
+  },
+  "trigger": {
+    "displayName": "WSO2 Agent Manager Chat Service",
+    "shortDisplayName": "Agent Manager",
+    "description": "Create a chat service that WSO2 Agent Manager calls to chat with the agent.",
+    "type": "amp"
+  },
+  "readOnlyMetadata": [
+    {
+      "key": "basePath",
+      "displayName": "Base Path",
+      "extractor": "SERVICE_BASE_PATH"
+    }
+  ],
+  "initForm": {
+    "fields": [
+      {
+        "target": "$service",
+        "metadata": {
+          "label": "Service Path",
+          "description": "The base path the chat service is served on. Agent Manager calls /chat at the root of the agent's endpoint, so keep / unless the agent's endpoint in Agent Manager includes a path."
+        },
+        "state": {
+          "enabled": true,
+          "editable": true,
+          "optional": false,
+          "advanced": false
+        },
+        "key": "identifier",
+        "placeholder": "/",
+        "default": "/",
+        "widget": {
+          "widgetKind": "SERVICE_PATH",
+          "selected": true,
+          "ballerinaType": "string"
+        },
+        "validations": [
+          {
+            "rule": "common.validate.required"
+          }
+        ],
+        "source": {
+          "construct": {
+            "kind": "SERVICE_BASE_PATH"
+          }
+        }
+      }
+    ]
+  },
+  "listeners": [
+    {
+      "target": "$listener",
+      "metadata": {
+        "label": "Agent Manager Listener",
+        "description": "Serves Agent Manager chat services over HTTP."
+      },
+      "form": {
+        "section": {
+          "label": "Agent Manager Listener",
+          "description": "Attach the agent to a new or existing Agent Manager listener."
+        },
+        "createNew": {
+          "label": "Create New Listener",
+          "description": "Define a new Agent Manager listener in the project."
+        },
+        "useExisting": {
+          "label": "Use Existing Listener",
+          "description": "Attach to an Agent Manager listener already declared in the project."
+        },
+        "listenerConfig": {
+          "label": "Listener Configuration",
+          "description": "Configure the Agent Manager listener."
+        },
+        "existingListener": {
+          "label": "Listener",
+          "description": "Select an existing Agent Manager listener to attach the agent to."
+        }
+      },
+      "formFields": {
+        "listenerVarName": {
+          "key": "listenerVarName",
+          "default": "agentManagerListener",
+          "metadata": {
+            "label": "Listener Name",
+            "description": "Provide a name for the listener being created"
+          },
+          "state": {
+            "enabled": true,
+            "editable": true,
+            "optional": false,
+            "advanced": false
+          }
+        },
+        "listenOn": {
+          "key": "listenOn",
+          "placeholder": "8000",
+          "default": "8000",
+          "metadata": {
+            "label": "Port",
+            "description": "The port to listen on, or an existing http:Listener to share. Use the port the agent is configured with in Agent Manager."
+          },
+          "state": {
+            "enabled": true,
+            "editable": true,
+            "optional": true,
+            "advanced": false
+          }
+        }
+      }
+    }
+  ],
+  "serviceTypes": [
+    {
+      "target": "$service",
+      "metadata": {
+        "label": "WSO2 Agent Manager Chat Service",
+        "description": "Handles chat messages from WSO2 Agent Manager through a fixed POST /chat resource."
+      },
+      "handlers": [
+        {
+          "target": "$service.chat",
+          "metadata": {
+            "label": "Chat",
+            "description": "Handles POST /chat: runs the agent on the user's message and returns its reply.",
+            "badge": "POST"
+          },
+          "state": {
+            "editable": false
+          },
+          "nameEditable": false,
+          "canAddParameters": false,
+          "parameters": [
+            {
+              "target": "$service.chat.request",
+              "metadata": {
+                "label": "Chat Request",
+                "description": "The session ID, the user's message and optional context."
+              },
+              "state": {
+                "editable": false,
+                "typeEditable": false
+              }
+            }
+          ],
+          "returnType": {
+            "target": "$service.chat.returns",
+            "state": {
+              "editable": false,
+              "typeEditable": false
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "artifactInfo": {
+    "displayLabel": "WSO2 Agent Manager Chat Service",
+    "icon": {
+      "lightPath": "icons/light.svg",
+      "darkPath": "icons/dark.svg"
+    }
+  }
+}
