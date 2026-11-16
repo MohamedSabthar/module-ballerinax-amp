@@ -62,7 +62,7 @@ componentUid=""    # Component UID send as a resource attribute
 environmentUid=""  # Environment UID send as a resource attribute
 ```
 
-5. Send a message to the agent, e.g. with the `Try It` feature in the Ballerina plugin, the AI Chat view in the `BI` plugin, or the Agent Manager console. Each run publishes a trace to Agent Manager.
+5. Send a message to the agent. Each run publishes a trace to Agent Manager. For an agent exposed with `ai:Listener`, use the `Try It` feature in the Ballerina plugin or the AI Chat view in the `BI` plugin. For one exposed with `amp:ChatService`, use the Agent Manager console's Try It page, or send a request to its `/chat` endpoint.
 
 ## Exposing an Agent to the Agent Manager Console
 
