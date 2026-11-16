@@ -17,12 +17,17 @@
 import ballerina/data.jsondata;
 import ballerina/http;
 
-# A request sent to the agent's `chat` endpoint, e.g. by the Agent Manager console's Try It page.
-# Additional fields sent by the caller are retained as rest fields.
+# A message sent to an agent's `chat` endpoint, e.g. from the Agent Manager console's Try It page.
 #
-# + sessionId - Conversation identifier, sent as `session_id`; reused for follow-up messages
-# + message - The user's message
-# + context - Optional context; the console sends an empty object
+# In JSON, the session identifier is the `session_id` field. Fields other than the ones below are
+# kept as rest fields, so a caller can send extra data without the request being rejected.
+#
+# + sessionId - Identifies the conversation, sent as `session_id`. Messages with the same ID belong
+#               to the same conversation, so pass it to the agent to keep its memory per session
+#               (e.g. `agent.run(request.message, request.sessionId)`)
+# + message - The user's message to the agent
+# + context - Additional context for this message, if any. The Agent Manager console sends an
+#             empty object
 public type ChatRequest record {
     @jsondata:Name {value: "session_id"}
     string sessionId;
@@ -30,27 +35,39 @@ public type ChatRequest record {
     map<json> context?;
 };
 
-# A JSON reply from the agent's `chat` endpoint. Additional fields are sent as-is.
+# An agent's reply from its `chat` endpoint, sent to the caller as JSON.
 #
-# + response - The agent's reply
+# Fields other than `response` are sent as-is, so a service can return extra data alongside the
+# reply; the Agent Manager console displays only `response`.
+#
+# + response - The agent's reply to the user's message
 public type ChatResponse record {
     string response;
 };
 
-# Defines a chat service compatible with the Agent Manager console's Try It page. The service
-# exposes `POST /chat` (relative to its base path), which replies with a `ChatResponse` as JSON.
+# A service that exposes an agent through the `POST /chat` endpoint that the Agent Manager
+# console's Try It page calls. Attach it to an `amp:Listener`; the endpoint is served at `chat`
+# under the service's base path.
 #
-# The request parameter must be annotated with `@http:Payload`:
+# A `ChatService` must implement the `post chat` resource below. Annotate its request parameter
+# with `@http:Payload`; without the annotation, the request is not read from the JSON body and
+# every call fails with `400 Bad Request`.
+#
 # ```ballerina
-# service amp:ChatService /agent on new amp:Listener(9090) {
+# service amp:ChatService / on new amp:Listener(8000) {
 #     resource function post chat(@http:Payload amp:ChatRequest request) returns amp:ChatResponse|error {
-#         return {response: check agent.run(request.message, request.sessionId)};
+#         string reply = check agent.run(request.message, request.sessionId);
+#         return {response: reply};
 #     }
 # }
 # ```
 public type ChatService distinct service object {
     *http:Service;
 
+    # Handles a message sent to the agent.
+    #
+    # + request - The message, read from the JSON request body
+    # + return - The agent's reply, sent as JSON with `201 Created`, or an error, which is sent as
+    #            `500 Internal Server Error`
     resource function post chat(@http:Payload ChatRequest request) returns ChatResponse|error;
 };
-
