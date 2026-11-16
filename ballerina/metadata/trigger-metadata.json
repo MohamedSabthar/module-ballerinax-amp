@@ -3,7 +3,7 @@
   "listeners": [
     {
       "id": "$listener",
-      "doc": "Serves amp:ChatService services over HTTP, so the WSO2 Agent Manager console's Try It page can chat with the agent. Listens on the given port, else 8090, or shares an existing http:Listener. Each service is attached to the underlying http:Listener directly, so it remains the entrypoint of the traces it produces.",
+      "doc": "Serves amp:ChatService services over HTTP, so the WSO2 Agent Manager console's Try It page can chat with the agent. Listens on the given port, else 8000, or shares an existing http:Listener. Each service is attached to the underlying http:Listener directly, so it remains the entrypoint of the traces it produces.",
       "type": { "name": "Listener" },
       "services": ["$service"],
       "multipleServicesAllowed": true,

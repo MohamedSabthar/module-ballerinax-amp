@@ -81,7 +81,7 @@ service amp:ChatService / on new amp:Listener(8000) {
 ```
 
 - The request parameter must be annotated with `@http:Payload`.
-- `amp:Listener` takes a port (default `8090`) or an existing `http:Listener`.
+- `amp:Listener` takes a port (default `8000`, the port Agent Manager calls) or an existing `http:Listener`.
 
 The endpoint accepts and returns JSON:
 

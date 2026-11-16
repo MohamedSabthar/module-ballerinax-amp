@@ -34,9 +34,10 @@ public class Listener {
     # Pass a port to start a new HTTP listener on it, or pass an existing `http:Listener` to serve
     # chat services on the same port as the program's other HTTP services.
     #
-    # + listenOn - The port to listen on, or the `http:Listener` to attach services to
+    # + listenOn - The port to listen on, or the `http:Listener` to attach services to. Defaults to 8000,
+    #              the port WSO2 Agent Manager calls
     # + return - An error if a new `http:Listener` could not be created on the given port
-    public function init(int|http:Listener listenOn = 8090) returns error? {
+    public function init(int|http:Listener listenOn = 8000) returns error? {
         if listenOn is http:Listener {
             self.httpListener = listenOn;
         } else {
