@@ -1,9 +1,16 @@
-# Ballerina Amp Observability Extension
+# Ballerina Amp Library
 
 [![Build](https://github.com/ballerina-platform/module-ballerinax-amp/workflows/Daily%20Build/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-amp/actions?query=workflow%3A"Daily+Build")
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-amp.svg)](https://github.com/ballerina-platform/module-ballerinax-amp/commits/main)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![codecov](https://codecov.io/gh/ballerina-platform/module-ballerinax-amp/branch/main/graph/badge.svg?token=5GCQ36HBEB)](https://codecov.io/gh/ballerina-platform/module-ballerinax-amp)
+
+The `ballerinax/amp` package connects Ballerina AI agents to WSO2 Agent Manager. It provides:
+
+- **Tracing**: an observability extension that publishes an agent's traces to Agent Manager through the OpenTelemetry Protobuf HTTP endpoint.
+- **Chat service**: `amp:Listener` and `amp:ChatService`, which expose an agent through the `POST /chat` endpoint that the Agent Manager console's Try It page calls.
+
+For usage, see the [package overview](ballerina/README.md).
 
 ## Building from the Source
 
