@@ -19,19 +19,17 @@ import ballerina/http;
 
 # A message sent to an agent's `chat` endpoint, e.g. from the Agent Manager console's Try It page.
 #
-# In JSON, the session identifier is the `session_id` field. Fields other than the ones below are
-# kept as rest fields, so a caller can send extra data without the request being rejected.
-#
-# + sessionId - Identifies the conversation, sent as `session_id`. Messages with the same ID belong
-#               to the same conversation, so pass it to the agent to keep its memory per session
-#               (e.g. `agent.run(request.message, request.sessionId)`)
-# + message - The user's message to the agent
-# + context - Additional context for this message, if any. The Agent Manager console sends an
-#             empty object
+# Fields other than the ones below are kept as rest fields, so a caller can send extra data without
+# the request being rejected.
 public type ChatRequest record {
+    # Identifies the conversation, sent as `session_id` in JSON. Messages with the same ID belong to
+    # the same conversation, so pass it to the agent to keep its memory per session
+    # (e.g. `agent.run(request.message, request.sessionId)`).
     @jsondata:Name {value: "session_id"}
     string sessionId;
+    # The user's message to the agent.
     string message;
+    # Additional context for this message, if any. The Agent Manager console sends an empty object.
     map<json> context?;
 };
 
@@ -39,9 +37,8 @@ public type ChatRequest record {
 #
 # Fields other than `response` are sent as-is, so a service can return extra data alongside the
 # reply; the Agent Manager console displays only `response`.
-#
-# + response - The agent's reply to the user's message
 public type ChatResponse record {
+    # The agent's reply to the user's message.
     string response;
 };
 
