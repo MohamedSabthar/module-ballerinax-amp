@@ -57,7 +57,7 @@
   "annotations": [
     {
       "id": "$payload",
-      "type": { "name": "Payload", "packageInfo": { "org": "ballerina", "packageName": "http", "moduleName": "http", "version": "2.17.4" } },
+      "type": { "name": "Payload", "packageInfo": { "org": "ballerina", "packageName": "http", "moduleName": "http", "version": "2.18.2" } },
       "attachPoint": "parameter",
       "presence": "required"
     }

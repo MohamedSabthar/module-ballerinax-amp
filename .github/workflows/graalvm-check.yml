@@ -8,10 +8,10 @@ on:
       ballerina_version:
         description: "Ballerina version"
         required: true
-        default: "2201.11.0"
+        default: "2201.14.0"
 
 env:
-  BALLERINA_DISTRIBUTION_VERSION: 2201.13.1 # Update this with the latest Ballerina version
+  BALLERINA_DISTRIBUTION_VERSION: 2201.14.0 # Update this with the latest Ballerina version
 
 jobs:
   build:
@@ -22,9 +22,8 @@ jobs:
       - name: Set up GraalVM
         uses: graalvm/setup-graalvm@v1
         with:
-          version: "latest"
-          java-version: "21.0.3"
-          components: "native-image"
+          java-version: "25"
+          distribution: "graalvm-community"
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Check GraalVM installation
         run: |
@@ -51,7 +50,7 @@ jobs:
         run: |
           ./gradlew build
       - name: Update dependency versions
-        run: ./gradlew :amp-extension-ballerina:updateTomlVerions
+        run: ./gradlew :amp-extension-ballerina:updateTomlVersions
         env:
           packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
           packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
