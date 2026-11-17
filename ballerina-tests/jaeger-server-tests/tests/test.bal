@@ -364,7 +364,7 @@ function testHttpCachingClientSpanTags() returns error? {
     test:assertTrue(containsTag("src.object.name", httpCachingClientSpanTagKeys));
     test:assertEquals(httpCachingClientSpanTags["src.object.name"], "ballerina/http/HttpCachingClient");
     test:assertTrue(containsTag("src.position", httpCachingClientSpanTagKeys));
-    test:assertEquals(httpCachingClientSpanTags["src.position"], "http_client_endpoint.bal:100:41");
+    assertPositionInFile(httpCachingClientSpanTags["src.position"], "http_client_endpoint.bal");
 }
 
 @test:Config
@@ -400,7 +400,7 @@ function testHttpClientSpanTags() returns error? {
     test:assertTrue(containsTag("src.object.name", httpClientSpanTagKeys));
     test:assertEquals(httpClientSpanTags["src.object.name"], "ballerina/http/HttpClient");
     test:assertTrue(containsTag("src.position", httpClientSpanTagKeys));
-    test:assertEquals(httpClientSpanTags["src.position"], "caching_http_caching_client.bal:372:16");
+    assertPositionInFile(httpClientSpanTags["src.position"], "caching_http_caching_client.bal");
 }
 
 function isContain(string[] array, string id) returns boolean {
@@ -414,4 +414,15 @@ function containsTag(string tagKey, string[] traceTagKeys) returns boolean {
         }
     }
     return false;
+}
+
+// Asserts a source position in a file of another module (e.g. ballerina/http) by its file name only: the line
+// and column move with every patch release of that module.
+function assertPositionInFile(string? position, string fileName) {
+    if position is () {
+        test:assertFail(string `expected a source position in ${fileName}, found none`);
+    }
+    string prefix = fileName + ":";
+    test:assertTrue(position.startsWith(prefix) && re `\d+:\d+`.isFullMatch(position.substring(prefix.length())),
+            string `expected a source position in ${fileName}, found ${position}`);
 }

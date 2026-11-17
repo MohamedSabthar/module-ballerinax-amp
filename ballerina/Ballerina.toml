@@ -68,6 +68,10 @@ version = "@opentelemetry.version@"
 
 # NOTE: opentelemetry-api, opentelemetry-context and opentelemetry-common are intentionally
 # not packed: ballerina-rt shades these artifacts and its copies always win classloading.
+# The SDK and exporter jars above rely on internal API classes, so they must be the exact
+# OpenTelemetry version ballerina-rt ships: 1.65.0 for Ballerina 2201.14.0 (openTelemetryApiVersion
+# in ballerina-lang's gradle/libs.versions.toml). Update openTelemetryVersion and
+# openTelemetrySDKVersion in gradle.properties together with the distribution.
 
 [[platform.java25.dependency]]
 path = "./lib/okhttp-jvm-@okhttp.version@.jar"
